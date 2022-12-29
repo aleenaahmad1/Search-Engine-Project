@@ -40,6 +40,7 @@ resultList = []
 
 
 def titlesearch(wordlist):
+    doclist = []
     for i in wordlist:
         if titlelex.get(i) is not None:
             ID = str(titlelex.get(i)) #getting ID from lexicon
@@ -77,11 +78,11 @@ def sortingdocs(): #sorting docs for multiple word query
     resultsFound += str(len(finaldocs))
     resultList.append(resultsFound)
     for i in finaldocs:
-        print(docIndex.get(str(i[0]))[1])
+       # print(docIndex.get(str(i[0]))[1])
         resultList.append(docIndex.get(str(i[0]))[1])
-        print(docIndex.get(str(i[0]))[0])
+        #print(docIndex.get(str(i[0]))[0])
         resultList.append(docIndex.get(str(i[0]))[0])
-        print("\n")
+       # print("\n")
 
 def getRank(doclist, ID):
     global docScores
@@ -104,9 +105,10 @@ window.title("GBW")
 
 
 window.geometry("800x600+200+100")
+window.state("zoomed")
 
 
-bg = PhotoImage(file="photo.png")
+bg = PhotoImage(file="background.png")
 bglbl = Label(window, image=bg)
 bglbl.place(x=0, y=0)
 
@@ -114,24 +116,57 @@ bglbl.place(x=0, y=0)
 queryText = ""
 newDoc = ""
 
+resultSelector = 0
+
+
+
 
 def get_query():
     newWindow = Tk()
     newWindow.title("Search Results")
     newWindow.geometry("1280x1000")
+    
+    def getResults(num,label):
+        tempStr = ''
+        for i in range (num*5,(num*5)+15):
+            if num*5 >= len(resultList):
+                return
+            tempStr+= resultList[i] + '\n'
+            if i%2 == 0:
+                tempStr += '\n''\n'
+        label.config(text = tempStr)
 
-    tempStr = ''
-    urlLabel = Label(newWindow,height=100,width=200,background="light blue", anchor='nw', font="TimesNewRoman 20")
+    def next():
+        global resultSelector
+        tempStr = ''
+        resultSelector +=1
+        getResults(resultSelector,urlLabel)
+
+    def prev():
+        global resultSelector
+        tempStr = ''
+        resultSelector -=1
+        getResults(resultSelector,urlLabel)
+    
+    
+
+    urlLabel = Label(newWindow,height=50,width=200,background="light blue", anchor='nw', font="TimesNewRoman 15")
     urlLabel.place(x=0,y=0)
     queryText = entrywidget.get()
     search(queryText)
-
-    for i in range (len(resultList)):
+    tempStr=''
+    for i in range (0,15):
         tempStr+= resultList[i] + '\n'
         if i%2 == 0:
             tempStr += '\n''\n'
 
     urlLabel.config(text = tempStr)
+
+    button1 = ttk.Button(newWindow, text="Next",command= next)
+    button1.place(x= 900,y=50)
+
+    button2 = ttk.Button(newWindow,text="Previous",command=prev)
+    button2.place(x=900,y=100)
 
 def moveDoc(entry):
     newDoc = entry.get()
@@ -148,7 +183,7 @@ def addNewDoc():
     aNewWindow.geometry("800x600+200+100")
 
 
-    entry1 = ttk.Entry(aNewWindow, width=50)
+    entry1 = ttk.Entry(aNewWindow, width=50, font="Ariel 12 bold")
     entry1.pack(pady=10)
 
 
@@ -159,20 +194,23 @@ def addNewDoc():
     aNewWindow.mainloop()
 
 
+
 inputText = StringVar()
 
-mylabel = Label(window, text="GBW", font="TimesNewRoman 20", foreground="orange", background="light blue")
+
+mylabel = Label(window,text="GBW", bd=3 , font="Ariel 32", foreground="black", background="light blue", relief=RAISED)
 mylabel.pack(pady=10)
 
-entrywidget = ttk.Entry(window, textvariable=inputText, width=50)
-entrywidget.pack(pady=10)
+entrywidget = ttk.Entry(window, textvariable=inputText, width=50 ,font="Ariel 30")
+entrywidget.place(x=400,y=500)
 
 
-mybtn = ttk.Button(window, text="Search", command=get_query)
-mybtn.pack(pady=10)
+mybtn = ttk.Button(window, text="Search", command=get_query,width=30)
+mybtn.place(x=820,y=600)
 
 btn1 = ttk.Button(window, text="Add A New Document", command=addNewDoc)
-btn1.pack(pady=10)
+btn1.place(x=1600,y=10)
+
 
 
 window.mainloop()
